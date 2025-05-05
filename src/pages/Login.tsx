@@ -132,11 +132,14 @@ const Login = () => {
 
           <Box sx={{ textAlign: 'center', mb: 2 }}>
             <Link
-              href="#"
+              component="button"
               onClick={() => navigate('/register')}
               sx={{
                 color: 'white',
                 textDecoration: 'none',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
                 '&:hover': {
                   textDecoration: 'underline'
                 }
