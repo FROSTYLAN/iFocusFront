@@ -14,7 +14,10 @@ import {
     SocialIcon
 } from '../components/icons/index.tsx';
 
-import { getCategories, deleteCategory } from '../services/categoryService.ts';
+import { 
+    getCategories, 
+    // deleteCategory 
+} from '../services/categoryService.ts';
 import { toast } from 'react-toastify';
 
 interface CategoryItemProps {
