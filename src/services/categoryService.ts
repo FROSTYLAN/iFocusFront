@@ -3,9 +3,9 @@ import axios from 'axios';
 const API_URL = 'https://ifocus.onrender.com/api/categories';
 
 interface Category {
-  id?: string;
+  id?: number;
   name: string;
-  icon: string;n
+  icon: string;
   color: string;
 }
 
@@ -21,7 +21,7 @@ export const getCategories = async (): Promise<Category[]> => {
 };
 
 // Crear una nueva categoría
-export const createCategory = async (categoryData: Omit<Category, 'id'>): Promise<Category> => {
+export const createCategory = async (categoryData: Category): Promise<Category> => {
   try {
     const response = await axios.post(API_URL, categoryData);
     return response.data;
