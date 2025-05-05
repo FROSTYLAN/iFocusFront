@@ -10,20 +10,28 @@ import {
 import {
   NameIcon,
   CategoryIcon,
-  ColorIcon
+  ColorIcon,
+  C1icon,
+  C2icon,
+  C3icon,
+  C4icon,
+  C5icon,
+  C6icon,
+  C7icon,
 } from '../components/icons/index.tsx';
-import { createCategory, updateCategory } from '../services/categoryService.ts';
+import { createCategory, updateCategory, deleteCategory } from '../services/categoryService.ts';
 import { toast } from 'react-toastify';
 
 interface CategoryModalProps {
   open: boolean;
   onClose: () => void;
   isEdit?: boolean;
+  onDelete?: () => void; 
   initialData?: {
-    id?: number;
+    personalizedCategoryId?: number;
     name: string;
     icon: string;
-    color: string;
+    description: string;
   };
 }
 
@@ -31,13 +39,32 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   open,
   onClose,
   isEdit = false,
+  onDelete,
   initialData
 }) => {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    selectedIcon: initialData?.icon || '',
-    selectedColor: initialData?.color || ''
+    name: '',
+    selectedIcon: '',
+    selectedColor: ''
   });
+
+  // Actualizamos el formData cuando cambia initialData o isEdit
+  React.useEffect(() => {
+    if (isEdit && initialData) {
+      setFormData({
+        name: initialData.name || '',
+        selectedIcon: initialData.icon || '',
+        selectedColor: initialData.description || ''
+      });
+    } else if (!isEdit) {
+      // Limpiamos el formulario cuando no es modo edición
+      setFormData({
+        name: '',
+        selectedIcon: '',
+        selectedColor: ''
+      });
+    }
+  }, [initialData, isEdit]);
 
   const colors = [
     '#E74C3C', // rojo
@@ -59,15 +86,17 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       const categoryData = {
         name: formData.name,
         icon: formData.selectedIcon,
-        color: formData.selectedColor
+        description: formData.selectedColor
       };
 
-      if (isEdit && initialData?.id) {
-        await updateCategory(initialData?.id, categoryData);
+      if (isEdit && initialData?.personalizedCategoryId) {
+        await updateCategory(initialData?.personalizedCategoryId, categoryData);
         toast.success('Categoría actualizada exitosamente');
+        onDelete?.();
       } else {
         await createCategory(categoryData);
         toast.success('Categoría creada exitosamente');
+        onDelete?.();
       }
 
       onClose();
@@ -76,6 +105,27 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       console.error('Error:', error);
     }
   };
+
+  const handleDeleteCategory = async (id: number) => {
+    try {
+      await deleteCategory(id);
+      toast.success('Categoría eliminada exitosamente');
+      onDelete?.();  // Llamamos al callback si existe
+    } catch (error) {
+      toast.error('Error al eliminar la categoría');
+      console.error('Error:', error);
+    }
+  };
+
+  const icons = [
+    <C1icon size={24} />,
+    <C2icon size={24} />,
+    <C3icon size={24} />,
+    <C4icon size={24} />,
+    <C5icon size={24} />,
+    <C6icon size={24} />,
+    <C7icon size={24} />
+  ];
 
   return (
     <Drawer
@@ -153,7 +203,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
               </Typography>
             </Box>
             <Box sx={{ width: '100%', minWidth: '600px', display: 'flex', justifyContent: 'space-around', gap: 2, flexWrap: 'wrap' }}>
-              {Array(7).fill(null).map((_, index) => (
+              {icons.map((icon, index) => (
                 <IconButton
                   key={index}
                   sx={{
@@ -168,14 +218,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                   }}
                   onClick={() => setFormData({ ...formData, selectedIcon: `icon${index}` })}
                 >
-                  <Box
-                    sx={{
-                      width: '24px',
-                      height: '24px',
-                      bgcolor: 'rgba(255, 255, 255, 0.8)',
-                      borderRadius: '6px'
-                    }}
-                  />
+                  {icon}
                 </IconButton>
               ))}
             </Box>
@@ -218,24 +261,57 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
           </Box>
         </Box>
 
-        <Button
-          variant="contained"
-          sx={{
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            borderRadius: '12px',
-            padding: '14px',
-            fontSize: '16px',
-            width: '180px',
-            textTransform: 'none',
-            '&:hover': {
-              bgcolor: 'rgba(255, 255, 255, 0.2)',
-            }
-          }}
-          onClick={handleSubmit}
-        >
-          {isEdit ? 'Actualizar categoría' : 'Crear categoría'}
-        </Button>
+        <Box sx={{ 
+          display: 'flex',
+          gap: 2,
+          justifyContent: 'center',
+          mt: 4
+        }}>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              borderRadius: '12px',
+              padding: '14px',
+              fontSize: '16px',
+              width: '180px',
+              textTransform: 'none',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.2)',
+              }
+            }}
+            onClick={handleSubmit}
+          >
+            {isEdit ? 'Actualizar categoría' : 'Crear categoría'}
+          </Button>
+
+          {isEdit && (
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: 'rgba(231, 76, 60, 0.1)',
+                color: '#E74C3C',
+                borderRadius: '12px',
+                padding: '14px',
+                fontSize: '16px',
+                width: '180px',
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'rgba(231, 76, 60, 0.2)',
+                }
+              }}
+              onClick={() => {
+                if (initialData?.personalizedCategoryId) {
+                  handleDeleteCategory(initialData.personalizedCategoryId);
+                  onClose();
+                }
+              }}
+            >
+              Eliminar categoría
+            </Button>
+          )}
+        </Box>
       </Box>
     </Drawer>
   );

@@ -11,12 +11,18 @@ import {
     HygieneIcon,
     FinanceIcon,
     WellnessIcon,
-    SocialIcon
+    SocialIcon,
+    C1icon,
+    C2icon,
+    C3icon,
+    C4icon,
+    C5icon,
+    C6icon,
+    C7icon,
 } from '../components/icons/index.tsx';
 
 import { 
     getCategories, 
-    // deleteCategory 
 } from '../services/categoryService.ts';
 import { toast } from 'react-toastify';
 
@@ -24,9 +30,10 @@ interface CategoryItemProps {
     icon: React.ReactNode;
     label: string;
     color: string;
+    onClick?: () => void;  // Añadimos esta prop
 }
 
-const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
+const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color, onClick }) => (
     <Box
         sx={{
             display: 'flex',
@@ -38,6 +45,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
         }}
     >
         <Paper
+            onClick={onClick}  // Añadimos el manejador de clic
             sx={{
                 bgcolor: color,
                 borderRadius: '12px',
@@ -84,15 +92,14 @@ const Categories = () => {
         id?: number;
         name: string;
         icon: string;
-        color: string;
+        description: string;
     }>(null);
-    const [customCategories, setCustomCategories] = useState<any[]>([]);
-    console.log(customCategories);
+    const [personalizedCategories, setPersonalizedCategories] = useState<any[]>([]);
 
     const fetchCategories = async () => {
         try {
             const categories = await getCategories();
-            setCustomCategories(categories);
+            setPersonalizedCategories(categories);
         } catch (error) {
             toast.error('Error al cargar las categorías');
             console.error('Error:', error);
@@ -103,26 +110,10 @@ const Categories = () => {
         fetchCategories();
     }, []);
 
-    // const handleDeleteCategory = async (id: number) => {
-    //     try {
-    //         await deleteCategory(id);
-    //         toast.success('Categoría eliminada exitosamente');
-    //         fetchCategories();
-    //     } catch (error) {
-    //         toast.error('Error al eliminar la categoría');
-    //         console.error('Error:', error);
-    //     }
-    // };
-
     const handleOpenModal = (category?: typeof selectedCategory) => {
         setSelectedCategory(category || null);
         setModalOpen(true);
     };
-
-    // const handleCloseModal = () => {
-    //     setModalOpen(false);
-    //     fetchCategories();
-    // };
 
     return (
         <Box sx={{ pl: 10, pr: 10, pb: 8, pt: 8 }}>
@@ -151,34 +142,38 @@ const Categories = () => {
             <Box sx={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: 2
+                gap: 6
             }}>
-                {/*
-        <Paper
-          onClick={() => handleOpenModal({
-            name: 'Hachi',
-            icon: 'school', 
-            color: '#8B4513'
-          })}
-          sx={{
-            bgcolor: '#8B4513',
-            borderRadius: '12px',
-            width: '80px',
-            height: '80px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1,
-            cursor: 'pointer',
-          }}
-        >
-          <School sx={{ color: 'white' }} />
-          <Typography variant="caption" sx={{ color: 'white', fontSize: '12px' }}>
-            Hachi
-          </Typography>
-        </Paper>
-        */}
+                {personalizedCategories.map((category) => {
+                     const IconComponent = {
+                        'icon0': <C1icon color="black" size={32} />,
+                        'icon1': <C2icon color="black" size={32} />,
+                        'icon2': <C3icon color="black" size={32} />,
+                        'icon3': <C4icon color="black" size={32} />,
+                        'icon4': <C5icon color="black" size={32} />,
+                        'icon5': <C6icon color="black" size={32} />,
+                        'icon6': <C7icon color="black" size={32} />
+                    }[category.icon] || (
+                        <Box
+                            sx={{
+                                width: '32px',
+                                height: '32px',
+                                bgcolor: 'white',
+                                borderRadius: '6px'
+                            }}
+                        />
+                    );
+                
+                    return (
+                        <CategoryItem
+                        key={category.id}
+                        icon={IconComponent}
+                        label={category.name}
+                        color={category.description}
+                        onClick={() => handleOpenModal(category)}
+                    />
+                    )
+                })}
                 <Paper
                     onClick={() => handleOpenModal()}
                     sx={{
@@ -201,9 +196,17 @@ const Categories = () => {
 
             <CategoryModal
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={() => {
+                    setModalOpen(false);
+                    setSelectedCategory(null);
+                }}
                 isEdit={!!selectedCategory}
                 initialData={selectedCategory || undefined}
+                onDelete={() => {
+                    fetchCategories();
+                    setModalOpen(false);
+                    setSelectedCategory(null);
+                }}
             />
         </Box>
     );
