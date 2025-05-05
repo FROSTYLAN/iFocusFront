@@ -12,12 +12,15 @@ import {
   CategoryIcon,
   ColorIcon
 } from '../components/icons/index.tsx';
+import { createCategory, updateCategory } from '../services/categoryService.ts';
+import { toast } from 'react-toastify';
 
 interface CategoryModalProps {
   open: boolean;
   onClose: () => void;
   isEdit?: boolean;
   initialData?: {
+    id?: number;
     name: string;
     icon: string;
     color: string;
@@ -45,6 +48,34 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     '#9B59B6', // morado
     '#95A5A6'  // gris
   ];
+
+  const handleSubmit = async () => {
+    try {
+      if (!formData.name || !formData.selectedIcon || !formData.selectedColor) {
+        toast.error('Por favor, complete todos los campos');
+        return;
+      }
+
+      const categoryData = {
+        name: formData.name,
+        icon: formData.selectedIcon,
+        color: formData.selectedColor
+      };
+
+      if (isEdit && initialData?.id) {
+        await updateCategory(initialData?.id, categoryData);
+        toast.success('Categoría actualizada exitosamente');
+      } else {
+        await createCategory(categoryData);
+        toast.success('Categoría creada exitosamente');
+      }
+
+      onClose();
+    } catch (error) {
+      toast.error('Error al procesar la categoría');
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <Drawer
@@ -201,9 +232,9 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
               bgcolor: 'rgba(255, 255, 255, 0.2)',
             }
           }}
-          onClick={onClose}
+          onClick={handleSubmit}
         >
-          Crear categoría
+          {isEdit ? 'Actualizar categoría' : 'Crear categoría'}
         </Button>
       </Box>
     </Drawer>

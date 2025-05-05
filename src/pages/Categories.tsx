@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import CategoryModal from '../components/CategoryModal.tsx';
 import {
@@ -13,6 +13,9 @@ import {
     WellnessIcon,
     SocialIcon
 } from '../components/icons/index.tsx';
+
+import { getCategories, deleteCategory } from '../services/categoryService.ts';
+import { toast } from 'react-toastify';
 
 interface CategoryItemProps {
     icon: React.ReactNode;
@@ -71,18 +74,51 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
     </Box>
 );
 
-const Categories = () => {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<null | {
-        name: string;
-        icon: string;
-        color: string;
-    }>(null);
 
-    const handleOpenModal = (category?: typeof selectedCategory) => {
-        setSelectedCategory(category || null);
-        setModalOpen(true);
-    };
+const Categories = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<null | {
+    id?: number;
+    name: string;
+    icon: string;
+    color: string;
+  }>(null);
+  const [customCategories, setCustomCategories] = useState<any[]>([]);
+
+  const fetchCategories = async () => {
+    try {
+      const categories = await getCategories();
+      setCustomCategories(categories);
+    } catch (error) {
+      toast.error('Error al cargar las categorías');
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleDeleteCategory = async (id: number) => {
+    try {
+      await deleteCategory(id);
+      toast.success('Categoría eliminada exitosamente');
+      fetchCategories();
+    } catch (error) {
+      toast.error('Error al eliminar la categoría');
+      console.error('Error:', error);
+    }
+  };
+
+  const handleOpenModal = (category?: typeof selectedCategory) => {
+    setSelectedCategory(category || null);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    fetchCategories();
+  };
 
     return (
         <Box sx={{ pl: 10, pr: 10, pb: 8, pt: 8 }}>
