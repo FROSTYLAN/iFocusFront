@@ -24,10 +24,10 @@ interface CategoryItemProps {
 }
 
 const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
-    <Box 
-        sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
+    <Box
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             '&:hover .category-text': {
                 color: color
@@ -58,13 +58,13 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
         >
             {icon}
         </Paper>
-        <Typography 
-            className={'overpass category-text'} 
-            variant="caption" 
-            sx={{ 
-                textAlign: 'center', 
-                color: 'white', 
-                fontSize: '14px', 
+        <Typography
+            className={'overpass category-text'}
+            variant="caption"
+            sx={{
+                textAlign: 'center',
+                color: 'white',
+                fontSize: '14px',
                 pt: '8px',
                 transition: 'color 0.3s ease',
             }}
@@ -76,49 +76,50 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ icon, label, color }) => (
 
 
 const Categories = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<null | {
-    id?: number;
-    name: string;
-    icon: string;
-    color: string;
-  }>(null);
-  const [customCategories, setCustomCategories] = useState<any[]>([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<null | {
+        id?: number;
+        name: string;
+        icon: string;
+        color: string;
+    }>(null);
+    const [customCategories, setCustomCategories] = useState<any[]>([]);
+    console.log(customCategories);
 
-  const fetchCategories = async () => {
-    try {
-      const categories = await getCategories();
-      setCustomCategories(categories);
-    } catch (error) {
-      toast.error('Error al cargar las categorías');
-      console.error('Error:', error);
-    }
-  };
+    const fetchCategories = async () => {
+        try {
+            const categories = await getCategories();
+            setCustomCategories(categories);
+        } catch (error) {
+            toast.error('Error al cargar las categorías');
+            console.error('Error:', error);
+        }
+    };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+    useEffect(() => {
+        fetchCategories();
+    }, []);
 
-  const handleDeleteCategory = async (id: number) => {
-    try {
-      await deleteCategory(id);
-      toast.success('Categoría eliminada exitosamente');
-      fetchCategories();
-    } catch (error) {
-      toast.error('Error al eliminar la categoría');
-      console.error('Error:', error);
-    }
-  };
+    // const handleDeleteCategory = async (id: number) => {
+    //     try {
+    //         await deleteCategory(id);
+    //         toast.success('Categoría eliminada exitosamente');
+    //         fetchCategories();
+    //     } catch (error) {
+    //         toast.error('Error al eliminar la categoría');
+    //         console.error('Error:', error);
+    //     }
+    // };
 
-  const handleOpenModal = (category?: typeof selectedCategory) => {
-    setSelectedCategory(category || null);
-    setModalOpen(true);
-  };
+    const handleOpenModal = (category?: typeof selectedCategory) => {
+        setSelectedCategory(category || null);
+        setModalOpen(true);
+    };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    fetchCategories();
-  };
+    // const handleCloseModal = () => {
+    //     setModalOpen(false);
+    //     fetchCategories();
+    // };
 
     return (
         <Box sx={{ pl: 10, pr: 10, pb: 8, pt: 8 }}>
