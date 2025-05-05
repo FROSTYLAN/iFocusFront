@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import GoogleIcon from '@mui/icons-material/Google';
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -24,7 +25,32 @@ const Register = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/home');
+      
+    if (formData.password !== formData.repeatPassword) {
+      toast.error('Las contraseñas no coinciden');
+      return;
+    }
+  
+    if (!formData.email || !formData.password || !formData.firstName) {
+      toast.error('Por favor, complete todos los campos requeridos');
+      return;
+    }
+  
+    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    if (existingUsers.some((user: any) => user.email === formData.email)) {
+      toast.error('Este correo electrónico ya está registrado');
+      return;
+    }
+  
+    const newUser = {
+      ...formData,
+      id: Date.now(),
+      createdAt: new Date().toISOString()
+    };
+  
+    localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]));
+    toast.success('¡Registro exitoso! Por favor, inicia sesión');
+    navigate('/login');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +68,7 @@ const Register = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'start',
-        bgcolor: '#000000',
+        bgcolor: '#101010',
         color: 'white',
         padding: 2
       }}

@@ -9,9 +9,6 @@ import {
   Button,
 } from '@mui/material';
 import {
-  Today,
-  AutoAwesome,
-  Category,
   AccountCircle,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +27,8 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    navigate('/');
+    localStorage.removeItem('currentUser');
+    navigate('/login');
   };
 
   return (
@@ -47,7 +45,6 @@ const Navbar = () => {
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Button 
               color="inherit" 
-              startIcon={<Today />}
               sx={{
                 textTransform: 'none',
                 minWidth: 'auto',
@@ -55,6 +52,7 @@ const Navbar = () => {
                 color: selectedSection === 'Hoy' ? 'white' : 'rgba(255, 255, 255, 0.7)',
                 borderBottom: selectedSection === 'Hoy' ? '2px solid white' : 'none',
                 borderRadius: 0,
+                fontSize: '16px',
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: 'white'
@@ -69,7 +67,6 @@ const Navbar = () => {
             </Button>
             <Button 
               color="inherit" 
-              startIcon={<AutoAwesome />}
               sx={{
                 textTransform: 'none',
                 minWidth: 'auto',
@@ -77,6 +74,7 @@ const Navbar = () => {
                 color: selectedSection === 'Hábitos' ? 'white' : 'rgba(255, 255, 255, 0.7)',
                 borderBottom: selectedSection === 'Hábitos' ? '2px solid white' : 'none',
                 borderRadius: 0,
+                fontSize: '16px',
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: 'white'
@@ -91,7 +89,6 @@ const Navbar = () => {
             </Button>
             <Button 
               color="inherit" 
-              startIcon={<Category />}
               sx={{
                 textTransform: 'none',
                 minWidth: 'auto',
@@ -99,6 +96,7 @@ const Navbar = () => {
                 color: selectedSection === 'Categorías' ? 'white' : 'rgba(255, 255, 255, 0.7)',
                 borderBottom: selectedSection === 'Categorías' ? '2px solid white' : 'none',
                 borderRadius: 0,
+                fontSize: '16px',
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: 'white'
@@ -120,7 +118,10 @@ const Navbar = () => {
             onClick={handleMenu}
             sx={{
               color: 'white',
-              padding: '4px'
+              padding: '4px',
+              '& .MuiSvgIcon-root': {
+                fontSize: '32px'
+              }
             }}
           >
             <AccountCircle />
